@@ -1,13 +1,20 @@
 from rest_framework import serializers
 
-from posts.models import Post
+from posts import models
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('id', 'username', 'email')
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-    created_at = serializers.ReadOnlyField()
+    created_at = serializers.DateTimeField(read_only=True)
+    author = UserSerializer(read_only=True)
 
     class Meta:
-        model = Post
-        fields = ('title', 'text', 'created_at', 'author')
+        model = models.Post
+        fields = ('id', 'title', 'text', 'created_at', 'author', 'tags')
+
 
