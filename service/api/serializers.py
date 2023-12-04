@@ -18,3 +18,16 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'text', 'created_at', 'author', 'tags')
 
 
+class ReportCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Report
+        fields = ('id', 'post', 'expire_time')
+
+
+class ReportViewSerializer(serializers.ModelSerializer):
+    post = PostSerializer()
+    curr_time = serializers.DateTimeField()
+
+    class Meta:
+        model = models.Report
+        fields = ('id', 'post', 'expire_time', 'curr_time')
