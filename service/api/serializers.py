@@ -1,4 +1,3 @@
-import logging
 from datetime import timedelta
 
 from django.utils import timezone
@@ -6,9 +5,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from posts import models
-
-
-logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,10 +18,14 @@ class PostSerializer(serializers.ModelSerializer):
     """Serializer for the post."""
     created_at = serializers.DateTimeField(read_only=True)
     author = UserSerializer(read_only=True)
+    is_public = serializers.SerializerMethodField()
+
+    def get_is_public(self, instance):
+        return instance.is_public
 
     class Meta:
         model = models.Post
-        fields = ('id', 'title', 'text', 'created_at', 'author', 'tags')
+        fields = ('id', 'title', 'text', 'created_at', 'author', 'tags', 'is_public')
 
 
 class ReportCreateSerializer(serializers.ModelSerializer):

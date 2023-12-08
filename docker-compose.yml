@@ -1,6 +1,8 @@
 version: '3'
 volumes:
   pg_data:
+  web-app:
+  static:
 services:
   db:
     image: postgres:13.10
@@ -8,13 +10,48 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
-  service:
-    build: ./service/
-    env_file: .env
-    depends_on:
-      - db
-
   gateway:
     build: ./gateway/
     ports:
       - 8000:80
+    volumes:
+      - static:/staticfiles/
+
+  web-app:
+    build: ./service/
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - ./service:/app
+      - static:/backend_static
+
+  redis:
+    image: redis:7.0.5
+    hostname: reids
+
+  worker:
+    build: ./service/
+    hostname: worker
+    entrypoint: celery
+    command: -A celery_app.app worker --loglevel=info
+    volumes:
+      - ./service:/app
+    links:
+      - redis
+    depends_on:
+      - redis
+
+  flower:
+    build: ./service/
+    hostname: flower
+    entrypoint: celery
+    command: -A celery_app.app flower
+    volumes:
+      - ./service:/app
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"

@@ -10,4 +10,6 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . .
 
+COPY /collected_static/. /backend_static/static/
+
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.wsgi"]
