@@ -9,6 +9,7 @@ from posts import models
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user."""
+
     class Meta:
         model = models.User
         fields = ('id', 'username', 'email')
@@ -16,20 +17,32 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     """Serializer for the post."""
+
     created_at = serializers.DateTimeField(read_only=True)
     author = UserSerializer(read_only=True)
-    is_public = serializers.SerializerMethodField()
+    is_public = serializers.SerializerMethodField(read_only=True)
 
     def get_is_public(self, instance):
+        if self.context['request'].method == 'POST':
+            return False
         return instance.is_public
 
     class Meta:
         model = models.Post
-        fields = ('id', 'title', 'text', 'created_at', 'author', 'tags', 'is_public')
+        fields = (
+            'id',
+            'title',
+            'text',
+            'created_at',
+            'author',
+            'tags',
+            'is_public'
+        )
 
 
 class ReportCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating a report."""
+
     class Meta:
         model = models.Report
         fields = ('id', 'post', 'expire_time')
@@ -53,9 +66,21 @@ class ReportCreateSerializer(serializers.ModelSerializer):
         return value
 
 
+class PostReportViewSerializer(serializers.ModelSerializer):
+    """Serializer for the post without annotated field "is_public"."""
+
+    created_at = serializers.DateTimeField(read_only=True)
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = models.Post
+        fields = ('id', 'title', 'text', 'created_at', 'author', 'tags')
+
+
 class ReportViewSerializer(serializers.ModelSerializer):
     """The serializer responsible for the presentation of the report."""
-    post = PostSerializer()
+
+    post = PostReportViewSerializer()
 
     class Meta:
         model = models.Report

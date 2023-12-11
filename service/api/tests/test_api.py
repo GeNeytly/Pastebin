@@ -141,7 +141,10 @@ class PostsApiTestCase(APITestCase):
         """Authenticated user can get list of reports."""
         url = reverse('api:report-list')
         response = self.auth_client.get(url)
-        serializer = serializers.ReportViewSerializer([self.report1], many=True)
+        serializer = serializers.ReportViewSerializer(
+            [self.report1],
+            many=True
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
