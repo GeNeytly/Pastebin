@@ -18,6 +18,8 @@ class PostViewSet(ModelViewSet):
     permission_classes = (permissions.IsAuthor,)
 
     def get_queryset(self):
+        """Returns all the user's posts, with an annotated field "is_public",
+        which means whether there is a report with this post"""
         queryset = models.Post.objects.select_related(
             'author'
         ).prefetch_related(
@@ -46,6 +48,7 @@ class ReportViewsSet(ModelViewSet):
     permission_classes = (permissions.IsAuthorOrListObjects,)
 
     def get_queryset(self):
+        """Returns all reports that have not yet arrived expire time"""
         queryset = models.Report.objects.filter(
             expire_time__gte=timezone.now()
         ).select_related(

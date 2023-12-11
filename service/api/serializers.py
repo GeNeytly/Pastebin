@@ -66,7 +66,7 @@ class ReportCreateSerializer(serializers.ModelSerializer):
         return value
 
 
-class PostReportViewSerializer(serializers.ModelSerializer):
+class PostViewSerializer(serializers.ModelSerializer):
     """Serializer for the post without annotated field "is_public"."""
 
     created_at = serializers.DateTimeField(read_only=True)
@@ -80,7 +80,7 @@ class PostReportViewSerializer(serializers.ModelSerializer):
 class ReportViewSerializer(serializers.ModelSerializer):
     """The serializer responsible for the presentation of the report."""
 
-    post = PostReportViewSerializer()
+    post = PostViewSerializer()
 
     class Meta:
         model = models.Report

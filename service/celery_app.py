@@ -1,8 +1,8 @@
 import os
-import time
 
 from celery import Celery
 from django.conf import settings
+from django.utils import timezone
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
@@ -14,5 +14,5 @@ app.autodiscover_tasks()
 
 @app.task()
 def debug_task():
-    time.sleep(20)
-    print('hello from debug task!')
+    now = timezone.now()
+    print(now)
