@@ -30,7 +30,6 @@ class AbstractCachedViewSet(ModelViewSet):
         obj_cache_name = f'{self.cache_base_name}_cache/{kwargs["pk"]}'
         obj_data = cache.get(obj_cache_name)
         if not obj_data:
-            time.sleep(5)
             instance = self.get_object()
             serializer = self.get_serializer(instance)
             obj_data = serializer.data
