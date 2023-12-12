@@ -11,7 +11,7 @@ class IsAuthor(permissions.BasePermission):
         return request.user == obj.author
 
 
-class IsAuthorOrListObjects(permissions.BasePermission):
+class IsAuthorOrReadOnly(permissions.BasePermission):
     """The user is authenticated and either he is
     the author of the post or a read request."""
 

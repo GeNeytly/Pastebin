@@ -21,6 +21,7 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==4.7.2
 djoser==2.1.0
 flake8==6.1.0
+flower==2.0.1
 humanize==4.9.0
 idna==3.4
 itypes==1.2.0

@@ -162,3 +162,15 @@ SIMPLE_JWT = {
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379',
+        'OPTIONS': {
+            'db': '1'
+        }
+    }
+}
+
+CACHE_LIFETIME = 60 * 20
