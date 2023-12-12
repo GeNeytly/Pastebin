@@ -51,5 +51,6 @@ class Report(models.Model):
         verbose_name='post that the author is sharing'
     )
     expire_time = models.DateTimeField(
-        verbose_name='when the post will no longer be available'
+        verbose_name='when the post will no longer be available',
+        db_index=True
     )
