@@ -1,8 +1,8 @@
 amqp==5.2.0
 asgiref==3.7.2
 async-timeout==4.0.3
-billiard==3.6.4.0
-celery==5.2.7
+billiard==4.2.0
+celery==5.3.6
 certifi==2023.7.22
 cffi==1.16.0
 charset-normalizer==3.3.2
@@ -21,7 +21,6 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==4.7.2
 djoser==2.1.0
 flake8==6.1.0
-flower==1.2.0
 humanize==4.9.0
 idna==3.4
 itypes==1.2.0
@@ -37,6 +36,7 @@ pycodestyle==2.11.1
 pycparser==2.21
 pyflakes==3.1.0
 PyJWT==2.8.0
+python-dateutil==2.8.2
 python3-openid==3.2.0
 pytz==2023.3.post1
 redis==5.0.1
@@ -47,7 +47,7 @@ social-auth-app-django==4.0.0
 social-auth-core==4.5.0
 sqlparse==0.4.4
 tornado==6.4
-typing_extensions==4.8.0
+typing-extensions==4.8.0
 tzdata==2023.3
 uritemplate==4.1.1
 urllib3==2.0.7

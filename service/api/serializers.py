@@ -1,18 +1,33 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from posts import models
 
 
-class UserSerializer(serializers.ModelSerializer):
-    """Serializer for the user."""
+class UserSerializer(UserCreateSerializer):
+    email = serializers.EmailField(required=True)
 
-    class Meta:
+    class Meta(UserCreateSerializer.Meta):
+        fields = (
+            'id',
+            'email',
+            'username',
+            'password'
+        )
         model = models.User
-        fields = ('id', 'username', 'email')
+        extra_kwargs = {'password': {'write_only': True}}
+
+
+# class UserSerializer(serializers.ModelSerializer):
+#     """Serializer for the user."""
+#
+#     class Meta:
+#         model = models.User
+#         fields = ('id', 'username', 'email')
 
 
 class PostSerializer(serializers.ModelSerializer):
