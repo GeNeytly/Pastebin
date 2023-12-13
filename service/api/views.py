@@ -1,4 +1,3 @@
-import time
 from logging import Logger
 
 from django.conf import settings
@@ -16,8 +15,8 @@ from posts import models
 logger = Logger(__name__)
 
 
-class AbstractCachedViewSet(ModelViewSet):
-    """An abstract class with redefined
+class CacheMixin(ModelViewSet):
+    """An mixin class with redefined
     methods for working with the cache."""
 
     # it will work with a cache that has a
@@ -49,7 +48,7 @@ class AbstractCachedViewSet(ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class PostViewSet(AbstractCachedViewSet):
+class PostViewSet(CacheMixin):
     serializer_class = serializers.PostSerializer
     permission_classes = (permissions.IsAuthor,)
     http_method_names = ['get', 'post', 'patch', 'delete']
@@ -82,7 +81,7 @@ class PostViewSet(AbstractCachedViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
-class ReportViewsSet(AbstractCachedViewSet):
+class ReportViewsSet(CacheMixin):
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = (permissions.IsAuthorOrReadOnly,)
     cache_base_name = 'report'

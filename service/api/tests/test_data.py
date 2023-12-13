@@ -1,23 +1,13 @@
+from datetime import timedelta
+
 from django.utils import timezone
-
-
-class FakeRequest:
-    def __init__(self, method):
-        self.__method = method
-
-    def get_method(self):
-        return self.__method
-
-    def set_method(self, method):
-        self.__method = method
-
-    method = property(get_method, set_method)
 
 
 def create_user_data(type):
     """Retrieves the data type, and based on it
     returns the data necessary to create a user."""
     user_data = {
+        'email': f'user{type}@email.com',
         'username': f'Username{type}',
         'password': f'password{type}'
     }
@@ -36,10 +26,12 @@ def create_post_data(type, author):
     return post_data
 
 
-def create_report_data(post, expire_after):
+def create_report_data(post):
+    """Retrieves the data type, and based on it returns
+    the data necessary to create a report."""
     report_data = {
         'post': post,
-        'expire_time': timezone.now() + expire_after
+        'expire_time': timezone.now() + timedelta(days=1)
     }
     return report_data
 

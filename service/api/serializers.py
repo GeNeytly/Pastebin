@@ -9,6 +9,8 @@ from posts import models
 
 
 class UserSerializer(UserCreateSerializer):
+    """Serializer for the user."""
+
     email = serializers.EmailField(required=True)
 
     class Meta(UserCreateSerializer.Meta):
@@ -22,14 +24,6 @@ class UserSerializer(UserCreateSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     """Serializer for the user."""
-#
-#     class Meta:
-#         model = models.User
-#         fields = ('id', 'username', 'email')
-
-
 class PostSerializer(serializers.ModelSerializer):
     """Serializer for the post."""
 
@@ -38,6 +32,11 @@ class PostSerializer(serializers.ModelSerializer):
     is_public = serializers.SerializerMethodField(read_only=True)
 
     def get_is_public(self, instance):
+        """Returns False if the "request" key is not in self.context,
+        otherwise it returns the annotated instance.is_public field."""
+        context = self.context.get('request')
+        if context is None:
+            return False
         if self.context['request'].method == 'POST':
             return False
         return instance.is_public
@@ -76,13 +75,13 @@ class ReportCreateSerializer(serializers.ModelSerializer):
         """Checks the expire time is longer than the current one."""
         if value < timezone.now() + timedelta(minutes=2):
             raise ValidationError(
-                'You cannot create a report with expire time than now!'
+                'You cannot create a report with an expire_time less than now!'
             )
         return value
 
 
 class PostViewSerializer(serializers.ModelSerializer):
-    """Serializer for the post without annotated field "is_public"."""
+    """Serializer for the post without annotated field is_public."""
 
     created_at = serializers.DateTimeField(read_only=True)
     author = UserSerializer(read_only=True)
@@ -93,7 +92,8 @@ class PostViewSerializer(serializers.ModelSerializer):
 
 
 class ReportViewSerializer(serializers.ModelSerializer):
-    """The serializer responsible for the presentation of the report."""
+    """The serializer with an attachment PostViewSerializer
+    for the presentation of the report."""
 
     post = PostViewSerializer()
 
