@@ -132,17 +132,17 @@ class TestReportCreateSerializer(TestCase):
         }
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
-    def test_is_id_field_content(self):
+    def test_id_field_content(self):
         """The serializer handles the instance.id field correctly."""
         serializer = self.report_serializer(self.report1)
         self.assertEqual(serializer.data['id'], self.report1.id)
 
-    def test_is_post_field_content(self):
+    def test_post_field_content(self):
         """The serializer handles the instance.post field correctly."""
         serializer = self.report_serializer(self.report1)
         self.assertEqual(serializer.data['post'], self.post1.id)
 
-    def test_is_expire_time_field_content(self):
+    def test_expire_time_field_content(self):
         """The serializer handles the instance.expire_time
         field correctly."""
         serializer = self.report_serializer(self.report1)

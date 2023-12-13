@@ -1,7 +1,6 @@
 # Pastebin
 
-войти в докер конйнер и исп там команды
-docker compose exec -it service bash
+## Stack
 
 
 docker compose exec web-app python manage.py collectstatic
