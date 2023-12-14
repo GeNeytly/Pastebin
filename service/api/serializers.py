@@ -14,12 +14,7 @@ class UserSerializer(UserCreateSerializer):
     email = serializers.EmailField(required=True)
 
     class Meta(UserCreateSerializer.Meta):
-        fields = (
-            'id',
-            'email',
-            'username',
-            'password'
-        )
+        fields = ('id', 'email', 'username', 'password')
         model = models.User
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -32,8 +27,9 @@ class PostSerializer(serializers.ModelSerializer):
     is_public = serializers.SerializerMethodField(read_only=True)
 
     def get_is_public(self, instance):
-        """Returns False if the "request" key is not in self.context,
-        otherwise it returns the annotated instance.is_public field."""
+        """Returns False if the "request" key is not in
+        self.context or POST request, otherwise it returns
+        the annotated instance.is_public field."""
         context = self.context.get('request')
         if context is None:
             return False

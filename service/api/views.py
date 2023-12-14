@@ -19,8 +19,8 @@ class CacheMixin(ModelViewSet):
     """An mixin class with redefined
     methods for working with the cache."""
 
-    # it will work with a cache that has a
-    # name f'{cache_base_name}_cache/{obj_id}'
+    # The name of the cache in the storage will look
+    # like this f'{cache_base_name}_cache/{obj_id}'
     cache_base_name = None
 
     def retrieve(self, request, *args, **kwargs):
@@ -87,7 +87,7 @@ class ReportViewsSet(CacheMixin):
     cache_base_name = 'report'
 
     def get_queryset(self):
-        """Returns all reports that have not yet arrived expire time"""
+        """Returns all reports that have not yet arrived expire time."""
         queryset = models.Report.objects.filter(
             expire_time__gte=timezone.now()
         ).select_related(
