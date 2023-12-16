@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.shortcuts import reverse
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import APITestCase, APIClient
@@ -10,7 +11,7 @@ from api.tests import utils as td
 from posts import models
 
 
-class PostsApiTestCase(APITestCase):
+class PostApiTestCase(APITestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -24,6 +25,7 @@ class PostsApiTestCase(APITestCase):
         cls.post1.tags.set([cls.tag1])
 
     def setUp(self):
+        cache.clear()
         self.auth_client = APIClient()
         self.auth_client.force_authenticate(self.user1)
 
@@ -40,7 +42,10 @@ class PostsApiTestCase(APITestCase):
         is_public = response.data[0].pop('is_public')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
-        self.assertEqual(is_public, False)
+        self.assertEqual(
+            models.Report.objects.filter(post=self.post1.id).exists(),
+            is_public
+        )
 
     def test_user_can_create_post(self):
         """Authenticated user can create a posts."""
@@ -51,6 +56,23 @@ class PostsApiTestCase(APITestCase):
         response = self.auth_client.post(url, data=post_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Post.objects.count(), posts_cnt + 1)
+
+    def test_user_can_retrieve_post(self):
+        """Authenticated user can retrieve the post."""
+        url = reverse('api:post-detail', args=(self.post1.id,))
+        response = self.auth_client.get(url)
+        context = {'request': APIRequestFactory().get('/')}
+        serializer = serializers.PostViewSerializer(
+            self.post1,
+            context=context
+        )
+        is_public = response.data.pop('is_public')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(
+            models.Report.objects.filter(post=self.post1.id).exists(),
+            is_public
+        )
 
     def test_user_can_patch_post(self):
         """Authenticated user can patch the posts."""
@@ -69,14 +91,15 @@ class PostsApiTestCase(APITestCase):
     def test_user_can_delete_post(self):
         """Authenticated user can delete the posts."""
         post_data = td.create_post_data('test1', self.user1)
-        post = models.Post.objects.create(**post_data)
+        new_post = models.Post.objects.create(**post_data)
         posts_cnt = models.Post.objects.count()
-        url = reverse('api:post-detail', args=(post.id,))
+        url = reverse('api:post-detail', args=(new_post.id,))
         response = self.auth_client.delete(url)
         new_response = self.auth_client.get(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(models.Post.objects.count(), posts_cnt - 1)
         self.assertEqual(new_response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(models.Post.objects.count(), posts_cnt - 1)
+        self.assertFalse(models.Post.objects.filter(id=new_post.id).exists())
 
 
 class ReportApiTestCase(APITestCase):
@@ -95,7 +118,7 @@ class ReportApiTestCase(APITestCase):
         cls.report1 = models.Report.objects.create(**report1_data)
 
     def setUp(self):
-        self.guest_client = APIClient()
+        cache.clear()
         self.auth_client = APIClient()
         self.auth_client.force_authenticate(self.user1)
 
@@ -110,7 +133,7 @@ class ReportApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
-    def test_create_report(self):
+    def test_user_can_create_report(self):
         """Authenticated user can create a posts."""
         url = reverse('api:report-list')
         data = td.create_report_data(self.post1.id)
@@ -118,6 +141,18 @@ class ReportApiTestCase(APITestCase):
         response = self.auth_client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Report.objects.count(), report_cnt + 1)
+
+    def test_user_can_retrieve_report(self):
+        """Authenticated user can retrieve the report."""
+        url = reverse('api:report-detail', args=(self.report1.id,))
+        response = self.auth_client.get(url)
+        context = {'request': APIRequestFactory().get('/')}
+        serializer = serializers.ReportViewSerializer(
+            self.report1,
+            context=context
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
 
     def test_user_can_patch_report(self):
         """Authenticated user can patch a posts."""
@@ -132,7 +167,7 @@ class ReportApiTestCase(APITestCase):
         self.assertEqual(response.data['post'], another_post.id)
 
     def test_user_can_delete_report(self):
-        """Authenticated user can patch a report."""
+        """Authenticated user can delete a report."""
         report_data = td.create_report_data(self.post1)
         report = models.Report.objects.create(**report_data)
         reports_cnt = models.Report.objects.count()
@@ -143,8 +178,8 @@ class ReportApiTestCase(APITestCase):
         self.assertEqual(models.Report.objects.count(), reports_cnt - 1)
         self.assertEqual(new_response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_user_cant_create_report_with_invalid_post(self):
-        """Tests that the user cannot create an ad with someone else's post"""
+    def test_user_cant_create_report_with_someone_else_post(self):
+        """Tests that the user cannot create report with someone else's post"""
         test_user_data = td.create_user_data('test')
         test_user = models.User.objects.create(**test_user_data)
         another_post_data = td.create_post_data('test', test_user)
