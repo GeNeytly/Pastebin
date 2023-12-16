@@ -6,7 +6,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework.test import APITestCase, APIClient
 
 from api import serializers
-from api.tests import test_data as td
+from api.tests import utils as td
 from posts import models
 
 

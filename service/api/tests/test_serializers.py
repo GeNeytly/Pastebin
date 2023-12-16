@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from api import serializers
-from api.tests import test_data as td
+from api.tests import utils
 from posts import models
 
 
@@ -11,7 +11,7 @@ class TestUserSerializer(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        user1_data = td.create_user_data('mixin1')
+        user1_data = utils.create_user_data('mixin1')
         cls.user1 = models.User.objects.create(**user1_data)
         cls.user_serializer = serializers.UserSerializer
 
@@ -44,11 +44,11 @@ class TestPostSerializer(TestCase):
 
         cls.post_serializer = serializers.PostSerializer
         cls.user_serializer = serializers.UserSerializer
-        user1_data = td.create_user_data('mixin1')
+        user1_data = utils.create_user_data('mixin1')
         cls.user1 = models.User.objects.create(**user1_data)
-        tag1_data = td.create_tag_data('mixin1')
+        tag1_data = utils.create_tag_data('mixin1')
         cls.tag1 = models.Tag.objects.create(**tag1_data)
-        post1_data = td.create_post_data('mixin1', cls.user1)
+        post1_data = utils.create_post_data('mixin1', cls.user1)
         cls.post1 = models.Post.objects.create(**post1_data)
         cls.post1.tags.set([cls.tag1])
 
@@ -115,11 +115,11 @@ class TestReportCreateSerializer(TestCase):
         super().setUpClass()
 
         cls.report_serializer = serializers.ReportCreateSerializer
-        user1_data = td.create_user_data('mixin1')
+        user1_data = utils.create_user_data('mixin1')
         cls.user1 = models.User.objects.create(**user1_data)
-        post1_data = td.create_post_data('mixin1', cls.user1)
+        post1_data = utils.create_post_data('mixin1', cls.user1)
         cls.post1 = models.Post.objects.create(**post1_data)
-        report1_data = td.create_report_data(cls.post1)
+        report1_data = utils.create_report_data(cls.post1)
         cls.report1 = models.Report.objects.create(**report1_data)
 
     def test_contains_expected_fields(self):
