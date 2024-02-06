@@ -38,7 +38,7 @@ class PatchCacheMixin(ModelViewSet):
 
 
 class DestroyCacheMixin(ModelViewSet):
-    """An mixin class with redefined partial_update
+    """An mixin class with redefined destroy
      method for working with the cache."""
 
     cache_base_name = None
@@ -53,4 +53,3 @@ class DestroyCacheMixin(ModelViewSet):
 class CacheMixin(RetrieveCacheMixin, PatchCacheMixin, DestroyCacheMixin):
     """An mixin class with redefined
     methods for working with the cache."""
-

@@ -1,6 +1,14 @@
 # Pastebin
 
 ## Stack
+- Python 3.9
+- Django 4.2.6
+- Django Rest Framework 3.14.0
+- Postgres 13.10
+- Nginx 1.22.1
+- Redis 7.0.5
+- Celery 5.3.6
+- Flower 2.0.1
 
 
 docker compose exec web-app python manage.py collectstatic
